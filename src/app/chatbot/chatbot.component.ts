@@ -1,28 +1,26 @@
-import { Component } from '@angular/core';
-import { OpenAiApiServiceService } from '../service.open-ai-api.service.service';
+import { Component, OnInit } from '@angular/core';
+import { ChatService, Message } from '../chat.service';
 
 @Component({
   selector: 'app-chatbot',
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss'],
 })
-export class ChatbotComponent {
-  userMessage!: string;
-  assistantReply!: string;
-  chatMessages: { role: string; content: string }[] = [];
-  constructor(private openAiApiService: OpenAiApiServiceService) {}
+export class ChatbotComponent implements OnInit {
+  messages: Message[] = [];
+  value: string | null = null;
+  constructor(public chatService: ChatService) {}
+
+  ngOnInit() {
+    this.chatService.conversation.subscribe((val) => {
+      this.messages = this.messages.concat(val);
+    });
+  }
+
   sendMessage() {
-    const userMessage = this.userMessage;
-    this.chatMessages.push({ role: 'user', content: userMessage });
-    this.openAiApiService
-      .sendMessage(this.userMessage)
-      .subscribe((response) => {
-        this.assistantReply = response.reply;
-        this.chatMessages.push({
-          role: 'assistant',
-          content: this.assistantReply,
-        });
-        this.userMessage = '';
-      });
+    if (this.value) {
+      this.chatService.getBotAnswer(this.value);
+      this.value = '';
+    }
   }
 }
