@@ -1,6 +1,5 @@
 <div class="ai-chatbot">
-
-    <h1>Angular Chat Bot</h1>
+    <h1>Angular OpenAI Chat Bot</h1>
     <div class="chat-container">
         <div *ngFor="let message of chatMessages" [ngClass]="message.role">
             {{ message.content }}
@@ -8,7 +7,14 @@
     </div>
 
     <div class="input-container">
-        <input [(ngModel)]="userMessage" placeholder="Enter your message" />
-        <button (click)="sendMessage()">Send</button>
+        <label class="label" *ngIf="chatMessages.length == 0; else dialogInfo" for="nameField">Your message</label>
+        <div class="input-wrapper">
+            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" placeholder="Enter your message" />
+            <button (click)="sendMessage()">Send</button>
+        </div>
     </div>
 </div>
+
+<ng-template #dialogInfo>
+    <span [className]="'float-right'">Total messages: {{chatMessages.length}}</span>
+</ng-template>

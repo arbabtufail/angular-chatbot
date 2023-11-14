@@ -19,9 +19,9 @@ export class OpneAIChatbotComponent {
       this.userMessage === undefined
     )
       return;
-
     const userMessage = this.userMessage;
     this.chatMessages.push({ role: 'user', content: userMessage });
+    this.userMessage = '';
     this.openAiApiService
       .sendMessage(this.userMessage)
       .subscribe((response: any) => {
@@ -30,7 +30,6 @@ export class OpneAIChatbotComponent {
           role: 'assistant',
           content: this.assistantReply,
         });
-        this.userMessage = '';
       });
   }
 }
