@@ -6,37 +6,54 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 
-const configuration = new Configuration({
-  // apiKey: process.env.OPENAI_API_KEY,
-  apiKey: "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",
-});
-const openai = new OpenAIApi(configuration);
+const setting = {
+  temperature: 1,
+  max_tokens: 300,
+  top_p: 1,
+  frequency_penalty: 0.94,
+  presence_penalty: 0.1,
+};
 
-app.use(express.json());
-app.use(cors());
+try {
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const openai = new OpenAIApi(configuration);
 
-app.get("/a", (req, res) => {
-  res.send("Server is up and running");
-});
-app.post("/chat", async (req, res) => {
-  console.log("chat fucntion is invoked");
-  const { message } = req.body;
+  app.use(express.json());
+  app.use(cors());
 
-  const completion = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: message },
-    ],
+  app.get("/a", (req, res) => {
+    res.send("Server is up and running");
   });
 
-  const reply = completion.data.choices[0].message.content;
+  app.post("/chat", async (req, res) => {
+    const { message } = req.body;
 
-  console.log("response is: ", reply);
+    try {
+      const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: message },
+        ],
+        ...setting,
+      });
 
-  res.json({ reply });
-});
+      const reply = completion.data.choices[0].message.content;
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+      res.json({ reply });
+    } catch (error) {
+      if (error.response) {
+        console.error("OpenAI Response Data:", error.response.data);
+      }
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+} catch (error) {
+  console.error("Error starting the server:", error);
+}
