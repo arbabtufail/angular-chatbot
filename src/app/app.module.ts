@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { OpneAIChatbotComponent } from './opne-ai-chatbot/opne-ai-chatbot.component';
 
 @NgModule({
-  declarations: [AppComponent, ChatbotComponent],
+  declarations: [AppComponent, ChatbotComponent, OpneAIChatbotComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
