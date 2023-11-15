@@ -10,6 +10,7 @@ export class OpneAIChatbotComponent {
   userMessage!: string;
   assistantReply!: string;
   chatMessages: { role: string; content: string }[] = [];
+
   constructor(private openAiApiService: OpenAiApiService) {}
 
   sendMessage() {
@@ -21,7 +22,6 @@ export class OpneAIChatbotComponent {
       return;
     const userMessage = this.userMessage;
     this.chatMessages.push({ role: 'user', content: userMessage });
-    this.userMessage = '';
     this.openAiApiService
       .sendMessage(this.userMessage)
       .subscribe((response: any) => {
@@ -30,6 +30,32 @@ export class OpneAIChatbotComponent {
           role: 'assistant',
           content: this.assistantReply,
         });
+        this.userMessage = '';
       });
+  }
+
+  sendMessageStream() {
+    if (
+      this.userMessage === '' ||
+      this.userMessage === null ||
+      this.userMessage === undefined
+    )
+      return;
+    const userMessage = this.userMessage;
+    this.chatMessages.push({ role: 'user', content: userMessage });
+    let assistantMessagePushed = false;
+    this.openAiApiService.getStreamedData(this.userMessage).subscribe({
+      next: (chunk) => {
+        if (!assistantMessagePushed) {
+          const assistantMessage = { role: 'assistant', content: '' };
+          assistantMessage.content += chunk;
+          this.chatMessages.push({ ...assistantMessage });
+          assistantMessagePushed = true;
+        } else {
+          this.chatMessages[this.chatMessages.length - 1].content += chunk;
+        }
+      },
+    });
+    this.userMessage = '';
   }
 }

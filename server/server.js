@@ -31,24 +31,80 @@ try {
     const { message } = req.body;
 
     try {
-      const completion = await openai.createChatCompletion({
+      const response = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: "You are a helpful assistant." },
           { role: "user", content: message },
         ],
-        ...setting,
       });
 
-      const reply = completion.data.choices[0].message.content;
-
+      const reply = response.data.choices[0].message.content;
+      console.log(reply);
       res.json({ reply });
     } catch (error) {
+      console.log("Error Message:", error.message);
       if (error.response) {
         console.error("OpenAI Response Data:", error.response.data);
       }
       res.status(500).json({ error: "Internal Server Error" });
     }
+  });
+
+  app.post("/stream", async (req, res) => {
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders(); // flush the headers to establish SSE with client
+
+    const { message } = req.body;
+
+    const response = openai.createChatCompletion(
+      {
+        model: "gpt-4",
+        stream: true,
+        messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: message },
+        ],
+      },
+      { responseType: "stream" }
+    );
+
+    response.then((resp) => {
+      let partialChunk = "";
+
+      resp.data.on("data", (chunk) => {
+        const rawData = `${partialChunk}${chunk}`.toString();
+        const payloads = rawData.split("\n\n");
+
+        // Keep the last incomplete payload for the next iteration
+        partialChunk = payloads.pop() || "";
+
+        for (const payload of payloads) {
+          // if string includes '[DONE]'
+          if (payload.includes("[DONE]")) {
+            res.end(); // Close the connection and return
+            return;
+          }
+
+          if (payload.startsWith("data:")) {
+            // remove 'data: ' and parse the corresponding object
+            try {
+              const data = JSON.parse(payload.replace("data: ", ""));
+              const text = data.choices[0].delta?.content;
+              if (text) {
+                // send value of text to the client
+                res.write(`${text}\n\n`);
+              }
+            } catch (error) {
+              console.log(`Error with JSON.parse and ${payload}.\n${error}`);
+            }
+          }
+        }
+      });
+    });
   });
 
   app.listen(port, () => {

@@ -9,8 +9,8 @@
     <div class="input-container">
         <label class="label" *ngIf="chatMessages.length == 0; else dialogInfo" for="nameField">Your message</label>
         <div class="input-wrapper">
-            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" placeholder="Enter your message" />
-            <button (click)="sendMessage()">Send</button>
+            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()" placeholder="Enter your message" />
+            <button (click)="sendMessageStream()">Send</button>
         </div>
     </div>
 </div>
