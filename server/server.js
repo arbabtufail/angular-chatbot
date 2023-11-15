@@ -96,7 +96,7 @@ try {
               const text = data.choices[0].delta?.content;
               if (text) {
                 // send value of text to the client
-                res.write(`${text}\n\n`);
+                res.write(`${text}`);
               }
             } catch (error) {
               console.log(`Error with JSON.parse and ${payload}.\n${error}`);

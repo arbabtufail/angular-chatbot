@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  AfterViewChecked,
+  Renderer2,
+} from '@angular/core';
 import { OpenAiApiService } from '../openAI-chat.service';
 
 @Component({
@@ -6,12 +12,31 @@ import { OpenAiApiService } from '../openAI-chat.service';
   templateUrl: './opne-ai-chatbot.component.html',
   styleUrls: ['./opne-ai-chatbot.component.scss'],
 })
-export class OpneAIChatbotComponent {
+export class OpneAIChatbotComponent implements AfterViewChecked {
+  @ViewChild('chatContainer') private chatContainer!: ElementRef;
   userMessage!: string;
   assistantReply!: string;
   chatMessages: { role: string; content: string }[] = [];
+  isLoading: boolean = false;
 
-  constructor(private openAiApiService: OpenAiApiService) {}
+  constructor(
+    private openAiApiService: OpenAiApiService,
+    private renderer: Renderer2
+  ) {}
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.renderer.setProperty(
+        this.chatContainer.nativeElement,
+        'scrollTop',
+        this.chatContainer.nativeElement.scrollHeight
+      );
+    } catch (err) {}
+  }
 
   sendMessage() {
     if (
@@ -43,6 +68,7 @@ export class OpneAIChatbotComponent {
       return;
     const userMessage = this.userMessage;
     this.chatMessages.push({ role: 'user', content: userMessage });
+    this.isLoading = true;
     let assistantMessagePushed = false;
     this.openAiApiService.getStreamedData(this.userMessage).subscribe({
       next: (chunk) => {
@@ -54,6 +80,13 @@ export class OpneAIChatbotComponent {
         } else {
           this.chatMessages[this.chatMessages.length - 1].content += chunk;
         }
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.userMessage = '';
+        this.isLoading = false;
       },
     });
     this.userMessage = '';

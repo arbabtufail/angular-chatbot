@@ -1,6 +1,6 @@
 <div class="ai-chatbot">
     <h1>Angular OpenAI Chat Bot</h1>
-    <div class="chat-container">
+    <div class="chat-container" #chatContainer>
         <div *ngFor="let message of chatMessages" [ngClass]="message.role">
             {{ message.content }}
         </div>
@@ -9,9 +9,17 @@
     <div class="input-container">
         <label class="label" *ngIf="chatMessages.length == 0; else dialogInfo" for="nameField">Your message</label>
         <div class="input-wrapper">
-            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()" placeholder="Enter your message" />
-            <button (click)="sendMessageStream()">Send</button>
+            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()"
+                [style.cursor]="isLoading ? 'not-allowed':''"
+                [placeholder]="isLoading ? 'generating response...' : 'Enter your message'" [disabled]="isLoading" />
+            <button (click)="sendMessageStream()" [disabled]="isLoading"
+                [style.cursor]="isLoading ? 'not-allowed':'pointer'">
+                Send
+
+            </button>
         </div>
+        <mat-progress-spinner class="example-margin" [color]="'blue'">
+        </mat-progress-spinner>
     </div>
 </div>
 
