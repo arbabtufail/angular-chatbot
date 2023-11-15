@@ -35,13 +35,11 @@ export class OpenAiApiService {
             const { done, value } = await reader.read();
 
             if (done) {
-              console.log('Streaming completed');
               observer.complete();
               return;
             }
 
             const chunk = textDecoder.decode(value);
-            console.log('Received chunk:', chunk);
             observer.next(chunk);
 
             read(); // Continue reading the stream

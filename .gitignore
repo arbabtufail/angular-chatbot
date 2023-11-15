@@ -3,6 +3,9 @@
 #server node modules
 /server/node_modules
 
+#server .env
+/server/.env
+
 # Compiled output
 /dist
 /tmp
