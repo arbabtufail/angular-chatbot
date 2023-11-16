@@ -8,6 +8,11 @@ import { Observable } from 'rxjs';
 export class OpenAiApiService {
   constructor(private http: HttpClient) {}
 
+  /**
+     *@ Todo 
+     need add url .env
+     */
+
   public sendMessage(message: string) {
     return this.http.post<any>(`http://localhost:3000/chat`, { message });
   }

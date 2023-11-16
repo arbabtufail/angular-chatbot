@@ -13,7 +13,7 @@
                 <mat-spinner *ngIf="isLoading" color="white" diameter="25" class="spinner"></mat-spinner>
                 <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()"
                     [style.cursor]="isLoading ? 'not-allowed':''"
-                    [placeholder]="isLoading ? 'generating response...' : 'Enter your message'" />
+                    [placeholder]="isLoading ? 'generating response' : 'Enter your message'" [disabled]="isLoading" />
                 <button (click)="isLoading? stopStreaming():sendMessageStream()"
                     [style.cursor]="isLoading ? 'pointer':'pointer'">
                     <span *ngIf="!isLoading">Send </span>
