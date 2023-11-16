@@ -1,25 +1,30 @@
 <div class="ai-chatbot">
-    <h1>Angular OpenAI Chat Bot</h1>
-    <div class="chat-container" #chatContainer>
-        <div *ngFor="let message of chatMessages" [ngClass]="message.role">
-            {{ message.content }}
+    <div class="ai-chatbot-container">
+        <h1>Angular OpenAI Chat Bot</h1>
+        <div class="chat-container" #chatContainer>
+            <div *ngFor="let message of chatMessages" [ngClass]="message.role">
+                {{ message.content }}
+            </div>
         </div>
-    </div>
 
-    <div class="input-container">
-        <label class="label" *ngIf="chatMessages.length == 0; else dialogInfo" for="nameField">Your message</label>
-        <div class="input-wrapper">
-            <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()"
-                [style.cursor]="isLoading ? 'not-allowed':''"
-                [placeholder]="isLoading ? 'generating response...' : 'Enter your message'" [disabled]="isLoading" />
-            <button (click)="sendMessageStream()" [disabled]="isLoading"
-                [style.cursor]="isLoading ? 'not-allowed':'pointer'">
-                Send
-
-            </button>
+        <div class="input-container">
+            <label class="label" *ngIf="chatMessages.length == 0; else dialogInfo" for="nameField">Your message</label>
+            <div class="input-wrapper">
+                <mat-spinner *ngIf="isLoading" color="white" diameter="25" class="spinner"></mat-spinner>
+                <input [(ngModel)]="userMessage" (keyup.enter)="sendMessageStream()"
+                    [style.cursor]="isLoading ? 'not-allowed':''"
+                    [placeholder]="isLoading ? 'generating response...' : 'Enter your message'" />
+                <button (click)="isLoading? stopStreaming():sendMessageStream()"
+                    [style.cursor]="isLoading ? 'pointer':'pointer'">
+                    <span *ngIf="!isLoading">Send </span>
+                    <div *ngIf="isLoading" class="stop-processing">
+                        <span>Stop
+                        </span>
+                        <mat-spinner color="white" diameter="25"></mat-spinner>
+                    </div>
+                </button>
+            </div>
         </div>
-        <mat-progress-spinner class="example-margin" [color]="'blue'">
-        </mat-progress-spinner>
     </div>
 </div>
 

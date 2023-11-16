@@ -51,7 +51,11 @@ try {
     }
   });
 
+  let continueProcessing = true;
+
   app.post("/stream", async (req, res) => {
+    continueProcessing = true;
+
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -84,7 +88,7 @@ try {
 
         for (const payload of payloads) {
           // if string includes '[DONE]'
-          if (payload.includes("[DONE]")) {
+          if (payload.includes("[DONE]") || !continueProcessing) {
             res.end(); // Close the connection and return
             return;
           }
@@ -105,6 +109,11 @@ try {
         }
       });
     });
+  });
+
+  app.post("/stopProcessing", (req, res) => {
+    continueProcessing = false;
+    res.json({ message: "Processing stopped" });
   });
 
   app.listen(port, () => {

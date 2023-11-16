@@ -81,8 +81,9 @@ export class OpneAIChatbotComponent implements AfterViewChecked {
           this.chatMessages[this.chatMessages.length - 1].content += chunk;
         }
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
+        window.alert(error);
       },
       complete: () => {
         this.userMessage = '';
@@ -90,5 +91,16 @@ export class OpneAIChatbotComponent implements AfterViewChecked {
       },
     });
     this.userMessage = '';
+  }
+
+  stopStreaming() {
+    this.openAiApiService.stopStreamedData().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+      },
+      error: (error) => {
+        window.alert(error);
+      },
+    });
   }
 }

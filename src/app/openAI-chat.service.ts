@@ -48,9 +48,22 @@ export class OpenAiApiService {
           read(); // Start reading the stream
         })
         .catch((error) => {
-          console.error('Error in streaming:', error);
-          observer.error(error);
+          if (
+            error instanceof TypeError &&
+            error.message.includes('Failed to fetch')
+          ) {
+            // Connection-related error, you can choose not to log it here
+            observer.error('Server is down or connection refused');
+          } else {
+            // Log other errors
+            console.error('Error in streaming:', error);
+            observer.error(error);
+          }
         });
     });
+  }
+
+  public stopStreamedData(): Observable<any> {
+    return this.http.post('http://localhost:3000/stopProcessing', {});
   }
 }
