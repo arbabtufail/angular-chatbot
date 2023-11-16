@@ -11,6 +11,8 @@
     justify-content: center;
     border: 35px solid rgb(251, 244, 244);
     border-radius: 45px;
+    display: flex;
+    flex-direction: column;
   }
 
   .chat-container {
@@ -24,11 +26,12 @@
       margin-top: 5px;
       background-color: #9bc9f1;
       margin-left: 100px;
-      text-align: right;
+      text-align: left;
       padding: 10px;
       font-size: 20px;
       border-radius: 15px;
       width: 370px;
+      white-space: pre-wrap;
     }
 
     .assistant {

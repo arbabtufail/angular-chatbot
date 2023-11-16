@@ -33,10 +33,7 @@ try {
     try {
       const response = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: message },
-        ],
+        messages: [...message],
       });
 
       const reply = response.data.choices[0].message.content;
@@ -68,10 +65,7 @@ try {
       {
         model: "gpt-4",
         stream: true,
-        messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: message },
-        ],
+        messages: [...message],
       },
       { responseType: "stream" }
     );

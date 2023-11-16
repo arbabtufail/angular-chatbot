@@ -13,11 +13,13 @@ export class OpenAiApiService {
      need add url .env
      */
 
-  public sendMessage(message: string) {
+  public sendMessage(message: { role: string; content: string }[]) {
     return this.http.post<any>(`http://localhost:3000/chat`, { message });
   }
 
-  public getStreamedData(message: string): Observable<string> {
+  public getStreamedData(
+    message: { role: string; content: string }[]
+  ): Observable<string> {
     const url = 'http://localhost:3000/stream';
 
     return new Observable<string>((observer) => {

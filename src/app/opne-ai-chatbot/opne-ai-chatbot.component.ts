@@ -48,7 +48,7 @@ export class OpneAIChatbotComponent implements AfterViewChecked {
     const userMessage = this.userMessage;
     this.chatMessages.push({ role: 'user', content: userMessage });
     this.openAiApiService
-      .sendMessage(this.userMessage)
+      .sendMessage(this.chatMessages)
       .subscribe((response: any) => {
         this.assistantReply = response.reply;
         this.chatMessages.push({
@@ -70,7 +70,7 @@ export class OpneAIChatbotComponent implements AfterViewChecked {
     this.chatMessages.push({ role: 'user', content: userMessage });
     this.isLoading = true;
     let assistantMessagePushed = false;
-    this.openAiApiService.getStreamedData(this.userMessage).subscribe({
+    this.openAiApiService.getStreamedData(this.chatMessages).subscribe({
       next: (chunk) => {
         if (!assistantMessagePushed) {
           const assistantMessage = { role: 'assistant', content: '' };
